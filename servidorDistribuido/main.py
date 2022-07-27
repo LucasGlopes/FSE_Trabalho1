@@ -9,6 +9,7 @@ semaforoAuxiliar = [1, 26, 21]
 
 QTD_ESTADOS = 6
 estadoAtual = 0
+botaoPedestrePrincipal = False
 botaoPedestreAuxiliar = False
 
 GPIO.setmode(GPIO.BCM)
@@ -17,12 +18,20 @@ GPIO.setup(semaforoPrincipal, GPIO.OUT)
 GPIO.setup(semaforoAuxiliar, GPIO.OUT)
 
 GPIO.setup(8, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+GPIO.setup(7, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
-def trataBotao(channel):
+def trataBotaoPrincipal(channel):
+        global botaoPedestrePrincipal
+        botaoPedestrePrincipal = not botaoPedestrePrincipal
+
+GPIO.add_event_detect(7,GPIO.RISING,callback=trataBotaoPrincipal)
+
+
+def trataBotaoAuxiliar(channel):
         global botaoPedestreAuxiliar
         botaoPedestreAuxiliar = not botaoPedestreAuxiliar
 
-GPIO.add_event_detect(8,GPIO.RISING,callback=trataBotao)
+GPIO.add_event_detect(8,GPIO.RISING,callback=trataBotaoAuxiliar)
 
 def atualizaEstado():
         global estadoAtual
@@ -37,8 +46,22 @@ def estado0():
 def estado1():
         acendeLeds([semaforoPrincipal[0],semaforoAuxiliar[2]])
         apagaLeds([semaforoPrincipal[1],semaforoPrincipal[2], semaforoAuxiliar[0],semaforoAuxiliar[1]])
-        sleep(20)
-        atualizaEstado()
+        sleep(10)
+
+        global estadoAtual
+        global botaoPedestrePrincipal
+        max_time = 20
+        curr_time = 10
+        while curr_time < max_time and botaoPedestrePrincipal == False:
+
+                sleep(0.1)
+                curr_time = curr_time + 0.1
+        
+        if botaoPedestrePrincipal:
+                estadoAtual = 3
+                botaoPedestrePrincipal = False
+        else:
+                atualizaEstado()
 
 def estado2():
         acendeLeds([semaforoPrincipal[1], semaforoAuxiliar[2]])
