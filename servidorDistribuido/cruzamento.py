@@ -5,31 +5,39 @@ from valores import TEMPO
 
 
 QTD_ESTADOS = 6
-botaoPedestrePrincipal = False
-botaoPedestreAuxiliar = False
 
+botoesPedestrePrincipal = dict (
+        C1=False,
+        C2=False,
+)
 
-def trataBotaoPrincipal(channel):
-        global botaoPedestrePrincipal
-        botaoPedestrePrincipal = not botaoPedestrePrincipal
+botoesPedestreAuxiliar = dict (
+        C1=False,
+        C2=False,
+)
 
-def trataBotaoAuxiliar(channel):
-        global botaoPedestreAuxiliar
-        botaoPedestreAuxiliar = not botaoPedestreAuxiliar
+def trataBotao(channel, CRUZAMENTO):
+        global botoesPedestrePrincipal
+        global botoesPedestreAuxiliar
 
-def atualizaEstado(estadoAtual):
-        global botaoPedestrePrincipal
-        global botaoPedestreAuxiliar
+        if channel == CRUZAMENTO['BOTAO_PEDESTRE_2']:
+                botoesPedestrePrincipal[CRUZAMENTO['TIPO']] = not botoesPedestrePrincipal[CRUZAMENTO['TIPO']]
+        else:
+                botoesPedestreAuxiliar[CRUZAMENTO['TIPO']] = not botoesPedestreAuxiliar[CRUZAMENTO['TIPO']]
+
+def atualizaEstado(estadoAtual, CRUZAMENTO):
+        global botoesPedestrePrincipal
+        global botoesPedestreAuxiliar
 
         if estadoAtual == 1:
                 tempo_max = TEMPO['PRINCIPAL_VERDE_MAXIMO']
                 tempo_atual = TEMPO['PRINCIPAL_VERDE_MINIMO']
-                while tempo_atual < tempo_max and botaoPedestrePrincipal == False:
+                while tempo_atual < tempo_max and botoesPedestrePrincipal[CRUZAMENTO['TIPO']] == False:
                         sleep(0.1)
                         tempo_atual = tempo_atual + 0.1
                 
-                if botaoPedestrePrincipal:
-                        botaoPedestrePrincipal = False
+                if botoesPedestrePrincipal[CRUZAMENTO['TIPO']]:
+                        botoesPedestrePrincipal[CRUZAMENTO['TIPO']] = False
                         return 3
                 else:
                         (estadoAtual + 1) % QTD_ESTADOS
@@ -37,12 +45,12 @@ def atualizaEstado(estadoAtual):
         elif estadoAtual == 4:
                 tempo_max = TEMPO['AUXILIAR_VERDE_MAXIMO']
                 tempo_atual = TEMPO['AUXILIAR_VERDE_MINIMO']
-                while tempo_atual < tempo_max and botaoPedestreAuxiliar == False:
+                while tempo_atual < tempo_max and botoesPedestreAuxiliar[CRUZAMENTO['TIPO']] == False:
                         sleep(0.1)
                         tempo_atual = tempo_atual + 0.1
         
-                if botaoPedestreAuxiliar:
-                        botaoPedestreAuxiliar = False
+                if botoesPedestreAuxiliar[CRUZAMENTO['TIPO']]:
+                        botoesPedestreAuxiliar[CRUZAMENTO['TIPO']] = False
                         return 0
                 else:
                         (estadoAtual + 1) % QTD_ESTADOS
@@ -61,12 +69,13 @@ def inicializaCruzamento(CRUZAMENTO):
         GPIO.setup(CRUZAMENTO['BOTAO_PEDESTRE_2'], GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
         GPIO.setup(CRUZAMENTO['BOTAO_PEDESTRE_1'], GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
-        GPIO.add_event_detect(CRUZAMENTO['BOTAO_PEDESTRE_2'],GPIO.RISING,callback=trataBotaoPrincipal, bouncetime=300)
-        GPIO.add_event_detect(CRUZAMENTO['BOTAO_PEDESTRE_1'],GPIO.RISING,callback=trataBotaoAuxiliar, bouncetime=300)
+        GPIO.add_event_detect(CRUZAMENTO['BOTAO_PEDESTRE_2'],GPIO.RISING,callback=lambda x: trataBotao(CRUZAMENTO['BOTAO_PEDESTRE_2'],CRUZAMENTO), bouncetime=300)
+        GPIO.add_event_detect(CRUZAMENTO['BOTAO_PEDESTRE_1'],GPIO.RISING,callback=lambda x: trataBotao(CRUZAMENTO['BOTAO_PEDESTRE_1'],CRUZAMENTO), bouncetime=300)
 
         while True:
                 estados[estadoAtual](semaforoPrincipal, semaforoAuxiliar)
-                estadoAtual = atualizaEstado(estadoAtual)
+                estadoAtual = atualizaEstado(estadoAtual, CRUZAMENTO)
+
 
         
 
