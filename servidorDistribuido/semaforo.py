@@ -18,11 +18,6 @@ def estado2(semaforoPrincipal, semaforoAuxiliar):
         apagaLeds([semaforoPrincipal[0],semaforoPrincipal[2], semaforoAuxiliar[0],semaforoAuxiliar[1]])
         sleep(TEMPO['AMARELO'])
 
-def estado3(semaforoPrincipal, semaforoAuxiliar):
-        acendeLeds([semaforoPrincipal[2], semaforoAuxiliar[2]])
-        apagaLeds([semaforoPrincipal[0],semaforoPrincipal[1], semaforoAuxiliar[0],semaforoAuxiliar[1]])
-        sleep(TEMPO['VERMELHO_TOTAL'])
-
 def estado4(semaforoPrincipal, semaforoAuxiliar):
         acendeLeds([semaforoPrincipal[2], semaforoAuxiliar[0]])
         apagaLeds([semaforoPrincipal[0],semaforoPrincipal[1], semaforoAuxiliar[1],semaforoAuxiliar[2]])
@@ -34,4 +29,4 @@ def estado5(semaforoPrincipal, semaforoAuxiliar):
         sleep(TEMPO['AMARELO'])
 
 
-estados = [estado0, estado1, estado2, estado3, estado4, estado5]
+estados = [estado0, estado1, estado2, estado0, estado4, estado5]
