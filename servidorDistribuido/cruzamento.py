@@ -1,5 +1,6 @@
 import RPi.GPIO as GPIO
 from time import sleep
+import time
 from semaforo import estados
 from valores import TEMPO
 
@@ -11,6 +12,35 @@ botaoPedestreAuxiliar = False
 
 sensorPassagem_1 = False
 sensorPassagem_2 = False
+
+tempoInicialSensor_1 = 0
+tempoFinalSensor_1 = 0
+
+tempoInicialSensor_2 = 0
+tempoFinalSensor_2 = 0
+
+def trataTempoInicial(channel, CRUZAMENTO):
+        global tempoInicialSensor_1
+        global tempoInicialSensor_2
+
+        if channel == CRUZAMENTO['SENSOR_VELOCIDADE_1_B']:
+                tempoInicialSensor_1 = time.time()
+        else:
+                tempoInicialSensor_2 = time.time()
+
+def trataTempoFinal(channel, CRUZAMENTO):
+        global tempoInicialSensor_1
+        global tempoInicialSensor_2
+        global tempoFinalSensor_1
+        global tempoFinalSensor_2
+
+        if channel == CRUZAMENTO['SENSOR_VELOCIDADE_1_A']:
+                tempoFinalSensor_1 = time.time()
+                print(round(((1/ (tempoFinalSensor_1 - tempoInicialSensor_1)) * 3.6), 2),'km/h')
+        else:
+                tempoFinalSensor_2 = time.time()
+                print(round(((1/ (tempoFinalSensor_2 - tempoInicialSensor_2)) * 3.6), 2),'km/h')
+
 
 def trataBotao(channel, CRUZAMENTO):
         global botaoPedestrePrincipal
@@ -76,14 +106,24 @@ def inicializaCruzamento(CRUZAMENTO):
         GPIO.setup(CRUZAMENTO['BOTAO_PEDESTRE_2'], GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
         GPIO.setup(CRUZAMENTO['BOTAO_PEDESTRE_1'], GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
-        GPIO.add_event_detect(CRUZAMENTO['BOTAO_PEDESTRE_2'],GPIO.RISING,callback=lambda x: trataBotao(CRUZAMENTO['BOTAO_PEDESTRE_2'],CRUZAMENTO), bouncetime=300)
-        GPIO.add_event_detect(CRUZAMENTO['BOTAO_PEDESTRE_1'],GPIO.RISING,callback=lambda x: trataBotao(CRUZAMENTO['BOTAO_PEDESTRE_1'],CRUZAMENTO), bouncetime=300)
-
         GPIO.setup(CRUZAMENTO['SENSOR_PASSAGEM_1'], GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
         GPIO.setup(CRUZAMENTO['SENSOR_PASSAGEM_2'], GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
+        GPIO.setup(CRUZAMENTO['SENSOR_VELOCIDADE_1_A'], GPIO.IN, pull_up_down=GPIO.PUD_UP)
+        GPIO.setup(CRUZAMENTO['SENSOR_VELOCIDADE_1_B'], GPIO.IN, pull_up_down=GPIO.PUD_UP)
+        GPIO.setup(CRUZAMENTO['SENSOR_VELOCIDADE_2_A'], GPIO.IN, pull_up_down=GPIO.PUD_UP)
+        GPIO.setup(CRUZAMENTO['SENSOR_VELOCIDADE_2_B'], GPIO.IN, pull_up_down=GPIO.PUD_UP)
+
+        GPIO.add_event_detect(CRUZAMENTO['BOTAO_PEDESTRE_2'],GPIO.RISING,callback=lambda x: trataBotao(CRUZAMENTO['BOTAO_PEDESTRE_2'],CRUZAMENTO), bouncetime=300)
+        GPIO.add_event_detect(CRUZAMENTO['BOTAO_PEDESTRE_1'],GPIO.RISING,callback=lambda x: trataBotao(CRUZAMENTO['BOTAO_PEDESTRE_1'],CRUZAMENTO), bouncetime=300)
+
         GPIO.add_event_detect(CRUZAMENTO['SENSOR_PASSAGEM_1'],GPIO.BOTH,callback=lambda x: trataSensorPassagem(CRUZAMENTO['SENSOR_PASSAGEM_1'],CRUZAMENTO))
         GPIO.add_event_detect(CRUZAMENTO['SENSOR_PASSAGEM_2'],GPIO.BOTH,callback=lambda x: trataSensorPassagem(CRUZAMENTO['SENSOR_PASSAGEM_2'],CRUZAMENTO))
+
+        GPIO.add_event_detect(CRUZAMENTO['SENSOR_VELOCIDADE_1_B'],GPIO.FALLING,callback=lambda x: trataTempoInicial(CRUZAMENTO['SENSOR_VELOCIDADE_1_B'],CRUZAMENTO))
+        GPIO.add_event_detect(CRUZAMENTO['SENSOR_VELOCIDADE_1_A'],GPIO.FALLING,callback=lambda x: trataTempoFinal(CRUZAMENTO['SENSOR_VELOCIDADE_1_A'],CRUZAMENTO))
+        GPIO.add_event_detect(CRUZAMENTO['SENSOR_VELOCIDADE_2_A'],GPIO.FALLING,callback=lambda x: trataTempoInicial(CRUZAMENTO['SENSOR_VELOCIDADE_2_A'],CRUZAMENTO))
+        GPIO.add_event_detect(CRUZAMENTO['SENSOR_VELOCIDADE_2_B'],GPIO.FALLING,callback=lambda x: trataTempoFinal(CRUZAMENTO['SENSOR_VELOCIDADE_2_B'],CRUZAMENTO))
 
         while True:
                 estados[estadoAtual](semaforoPrincipal, semaforoAuxiliar)
