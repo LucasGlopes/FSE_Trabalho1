@@ -3,6 +3,8 @@ from time import sleep
 import time
 from semaforo import estados
 from valores import TEMPO
+from threading import Thread
+from socketCliente import socketCliente, envia_mensagem
 
 
 QTD_ESTADOS = 6
@@ -19,6 +21,37 @@ tempoFinalSensor_1 = 0
 tempoInicialSensor_2 = 0
 tempoFinalSensor_2 = 0
 
+qtdCarrosViaAuxiliar_S1 = 0
+qtdCarrosViaAuxiliar_S2 = 0
+velocidadesCarros = []
+qtdInfracoesSinal = 0
+qtdInfracoesVelocidade = 0
+
+tempoInicialCruzamento = time.time()
+
+def enviaDados(CRUZAMENTO):
+        global qtdCarrosViaAuxiliar_S1
+        global qtdCarrosViaAuxiliar_S2
+        global velocidadesCarros
+        global qtdInfracoesSinal
+        global qtdInfracoesVelocidade
+        global tempoInicialCruzamento
+
+        while True:
+                dadosCruzamento = {
+                        "numeroCruzamento": CRUZAMENTO['TIPO'],
+                        "velocidadesViaPrincipal": velocidadesCarros,
+                        "qtdCarrosViaAuxiliar_S1": qtdCarrosViaAuxiliar_S1,
+                        "qtdCarrosViaAuxiliar_S2": qtdCarrosViaAuxiliar_S2,
+                        "qtdInfracoesSinal": qtdInfracoesSinal,
+                        "qtdInfracoesVelocidade": qtdInfracoesVelocidade,
+                        "tempoInicial": tempoInicialCruzamento
+                }
+                envia_mensagem(dadosCruzamento)
+                sleep(2)
+
+
+
 def trataTempoInicial(channel, CRUZAMENTO):
         global tempoInicialSensor_1
         global tempoInicialSensor_2
@@ -33,13 +66,19 @@ def trataTempoFinal(channel, CRUZAMENTO):
         global tempoInicialSensor_2
         global tempoFinalSensor_1
         global tempoFinalSensor_2
+        global velocidadesCarros
 
         if channel == CRUZAMENTO['SENSOR_VELOCIDADE_1_A']:
                 tempoFinalSensor_1 = time.time()
-                print(round(((1/ (tempoFinalSensor_1 - tempoInicialSensor_1)) * 3.6), 2),'km/h')
+                velocidade = round(((1/ (tempoFinalSensor_1 - tempoInicialSensor_1)) * 3.6), 2)
+                print(velocidade,'km/h')
+                velocidadesCarros.append(velocidade)
         else:
                 tempoFinalSensor_2 = time.time()
-                print(round(((1/ (tempoFinalSensor_2 - tempoInicialSensor_2)) * 3.6), 2),'km/h')
+                velocidade = round(((1/ (tempoFinalSensor_2 - tempoInicialSensor_2)) * 3.6), 2)
+                print(velocidade,'km/h')
+                velocidadesCarros.append(velocidade)
+
 
 
 def trataBotao(channel, CRUZAMENTO):
@@ -54,11 +93,17 @@ def trataBotao(channel, CRUZAMENTO):
 def trataSensorPassagem(channel, CRUZAMENTO):
         global sensorPassagem_1
         global sensorPassagem_2
+        global qtdCarrosViaAuxiliar_S1
+        global qtdCarrosViaAuxiliar_S2
 
         if channel == CRUZAMENTO['SENSOR_PASSAGEM_1']:
                 sensorPassagem_1 = not sensorPassagem_1
+                if sensorPassagem_1:
+                        qtdCarrosViaAuxiliar_S1 += 1
         else:
                 sensorPassagem_2 = not sensorPassagem_2
+                if sensorPassagem_2:
+                        qtdCarrosViaAuxiliar_S2 += 1 
 
 def atualizaEstado(estadoAtual):
         global botaoPedestrePrincipal
@@ -94,6 +139,7 @@ def atualizaEstado(estadoAtual):
 
         return (estadoAtual + 1) % QTD_ESTADOS
 
+
 def inicializaCruzamento(CRUZAMENTO):
         semaforoPrincipal = [CRUZAMENTO['SEMAFORO_2_VERDE'], CRUZAMENTO['SEMAFORO_2_AMARELO'], CRUZAMENTO['SEMAFORO_2_VERMELHO']]
         semaforoAuxiliar = [CRUZAMENTO['SEMAFORO_1_VERDE'], CRUZAMENTO['SEMAFORO_1_AMARELO'], CRUZAMENTO['SEMAFORO_1_VERMELHO']]
@@ -125,9 +171,14 @@ def inicializaCruzamento(CRUZAMENTO):
         GPIO.add_event_detect(CRUZAMENTO['SENSOR_VELOCIDADE_2_A'],GPIO.FALLING,callback=lambda x: trataTempoInicial(CRUZAMENTO['SENSOR_VELOCIDADE_2_A'],CRUZAMENTO))
         GPIO.add_event_detect(CRUZAMENTO['SENSOR_VELOCIDADE_2_B'],GPIO.FALLING,callback=lambda x: trataTempoFinal(CRUZAMENTO['SENSOR_VELOCIDADE_2_B'],CRUZAMENTO))
 
+        socket = Thread(target=socketCliente, args=('164.41.98.26',10282),daemon=True)
+        socket.start()
+
+        envio = Thread(target=enviaDados, args=(CRUZAMENTO,),daemon=True)
+        envio.start()
+
         while True:
                 estados[estadoAtual](semaforoPrincipal, semaforoAuxiliar)
                 estadoAtual = atualizaEstado(estadoAtual)
 
         
-
