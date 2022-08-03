@@ -1,7 +1,7 @@
 import socket
 import json
 
-def socketCliente(host, port, tipoCruzamento):
+def socketCliente(host, port, CRUZAMENTO):
     global conexao
 
     conexao = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -9,7 +9,7 @@ def socketCliente(host, port, tipoCruzamento):
     conexao.connect((host, port))
 
     dadosCruzamento = {
-        "numeroCruzamento": tipoCruzamento,
+        "numeroCruzamento": CRUZAMENTO['TIPO'],
         "velocidadesViaPrincipal": [],
         "qtdCarrosViaAuxiliar_S1": 0,
         "qtdCarrosViaAuxiliar_S2": 0,
@@ -19,7 +19,7 @@ def socketCliente(host, port, tipoCruzamento):
     }
     while True:
 
-        conexao.send(json.dumps(dadosCruzamento).encode('utf-8'))
+        conexao.send(json.dumps(dadosCruzamento).encode())
 
         data = conexao.recv(1024)
 
@@ -35,4 +35,4 @@ def socketCliente(host, port, tipoCruzamento):
 def envia_mensagem(dadosCruzamento):
     global conexao
 
-    conexao.send(json.dumps(dadosCruzamento).encode('utf-8'))
+    conexao.send(json.dumps(dadosCruzamento).encode())

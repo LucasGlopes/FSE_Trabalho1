@@ -1,7 +1,7 @@
 from os import system, name
 import time
 
-cruzamentos = []
+cruzamentos = {}
  
 def limpaTela():
   
@@ -12,11 +12,15 @@ def limpaTela():
 
 def atualizaInfo(mensagem):
     global cruzamentos
-
-    cruzamentos.append(mensagem)
+    cruzamentos[mensagem['numeroCruzamento']] = mensagem
+    # cruzamentos.append(mensagem)
 
 def calculaMedia(lista):
     total = 0
+
+    if len(lista) == 0:
+        return 0
+
     for i in lista:
         total += i
 
@@ -33,10 +37,11 @@ def print_menu_info():
     limpaTela()
 
     for cruz in cruzamentos:
-        print('INFORMAÇÕES CRUZAMENTO',cruz["numeroCruzamento"],'\n')
-        print('Velocidade Média na Via Principal:', calculaMedia(cruz["velocidadesViaPrincipal"]),'\n')
-        print('Fluxo de carros na Via Auxiliar - Sentido 1:',calculaFluxo(cruz["qtdCarrosViaAuxiliar_S1"],cruz["tempoInicial"]),'\n')
-        print('Fluxo de carros na Via Auxiliar - Sentido 2:',calculaFluxo(cruz["qtdCarrosViaAuxiliar_S2"],cruz["tempoInicial"]),'\n')
+        print('INFORMAÇÕES CRUZAMENTO',cruzamentos[cruz]["numeroCruzamento"],'\n')
+        # print('INFORMAÇÕES CRUZAMENTO\n')
+        print('Velocidade Média na Via Principal:',calculaMedia(cruzamentos[cruz]["velocidadesViaPrincipal"]),'km/h\n')
+        print('Fluxo de carros na Via Auxiliar - Sentido 1:',calculaFluxo(cruzamentos[cruz]["qtdCarrosViaAuxiliar_S1"],cruzamentos[cruz]["tempoInicial"]),'carros/min\n')
+        print('Fluxo de carros na Via Auxiliar - Sentido 2:',calculaFluxo(cruzamentos[cruz]["qtdCarrosViaAuxiliar_S2"],cruzamentos[cruz]["tempoInicial"]),'carros/min\n')
 
 
     saida = input('Pressione ENTER para voltar ao menu')

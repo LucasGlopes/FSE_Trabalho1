@@ -17,7 +17,8 @@ def thread_cliente(c):
             # c.send(data)
             # atualizaInfo(data)
             # json.loads(data)
-            cruzamentos.append(json.loads(data))
+            # cruzamentos.append(json.loads(data))
+            atualizaInfo(json.loads(data))
     
     c.close()
 

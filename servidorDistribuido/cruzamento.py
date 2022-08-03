@@ -48,7 +48,7 @@ def enviaDados(CRUZAMENTO):
                         "tempoInicial": tempoInicialCruzamento
                 }
                 envia_mensagem(dadosCruzamento)
-                sleep(2)
+                sleep(10)
 
 
 
@@ -171,7 +171,7 @@ def inicializaCruzamento(CRUZAMENTO):
         GPIO.add_event_detect(CRUZAMENTO['SENSOR_VELOCIDADE_2_A'],GPIO.FALLING,callback=lambda x: trataTempoInicial(CRUZAMENTO['SENSOR_VELOCIDADE_2_A'],CRUZAMENTO))
         GPIO.add_event_detect(CRUZAMENTO['SENSOR_VELOCIDADE_2_B'],GPIO.FALLING,callback=lambda x: trataTempoFinal(CRUZAMENTO['SENSOR_VELOCIDADE_2_B'],CRUZAMENTO))
 
-        socket = Thread(target=socketCliente, args=('164.41.98.26',10282),daemon=True)
+        socket = Thread(target=socketCliente, args=('164.41.98.26',10282,CRUZAMENTO),daemon=True)
         socket.start()
 
         envio = Thread(target=enviaDados, args=(CRUZAMENTO,),daemon=True)
