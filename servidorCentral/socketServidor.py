@@ -14,10 +14,6 @@ def thread_cliente(c):
         if not data:
             break
         else:
-            # c.send(data)
-            # atualizaInfo(data)
-            # json.loads(data)
-            # cruzamentos.append(json.loads(data))
             atualizaInfo(pickle.loads(data))
     
     c.close()
@@ -25,8 +21,6 @@ def thread_cliente(c):
 def inicializaSocket(port):
     global conexoes
     host = "0.0.0.0"
-
-    # port = 10282
     
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)

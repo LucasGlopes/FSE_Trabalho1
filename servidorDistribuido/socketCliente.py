@@ -17,20 +17,14 @@ def socketCliente(host, port, CRUZAMENTO):
         "qtdInfracoesVelocidade": 0,
         "tempoInicial": 0
     }
-    while True:
-
-        # conexao.send(pickle.dumps(dadosCruzamento))
-        envia_mensagem(dadosCruzamento)
-        data = conexao.recv(1024)
-
-        # print('received from the server :', str(data.decode('ascii')))
-
-        # ans = input('\ncontinue?\n')
-        # if ans == 'y':
-        #     continue
-        # else:
-        #     break
-    conexao.close()
+    try:
+        while True:
+            envia_mensagem(dadosCruzamento)
+            data = conexao.recv(1024)
+            
+    except:
+        print('Ocorreu um erro')
+        conexao.close()
 
 def envia_mensagem(dadosCruzamento):
     global conexao
