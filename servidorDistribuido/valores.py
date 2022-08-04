@@ -1,3 +1,6 @@
+import socket
+
+
 CRUZAMENTO_1 = dict(
     SEMAFORO_1_VERDE=1,  
     SEMAFORO_1_AMARELO =26,
@@ -13,7 +16,7 @@ CRUZAMENTO_1 = dict(
     SENSOR_VELOCIDADE_1_B=23,
     SENSOR_VELOCIDADE_2_A=24,
     SENSOR_VELOCIDADE_2_B=25,
-    TIPO='C1'
+    TIPO=socket.gethostname()+' - C1'
 )
 
 CRUZAMENTO_2 = dict(
@@ -31,7 +34,7 @@ CRUZAMENTO_2 = dict(
     SENSOR_VELOCIDADE_1_B=22,
     SENSOR_VELOCIDADE_2_A=13,
     SENSOR_VELOCIDADE_2_B=19,
-    TIPO='C2'
+    TIPO=socket.gethostname()+' - C2'
 )
 
 TEMPO = dict(

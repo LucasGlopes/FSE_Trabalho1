@@ -1,7 +1,17 @@
 from os import system, name
 import time
+from time import sleep
+from threading import Thread, Event
+import signal
 
 cruzamentos = {}
+
+evento_saida = Event()
+
+def signal_handler(signum, frame):
+    evento_saida.set()
+
+signal.signal(signal.SIGINT, signal_handler)
  
 def limpaTela():
   
@@ -13,7 +23,6 @@ def limpaTela():
 def atualizaInfo(mensagem):
     global cruzamentos
     cruzamentos[mensagem['numeroCruzamento']] = mensagem
-    # cruzamentos.append(mensagem)
 
 def calculaMedia(lista):
     total = 0
@@ -36,16 +45,26 @@ def print_menu_info():
     global cruzamentos
     limpaTela()
 
-    for cruz in cruzamentos:
-        print('INFORMAÇÕES CRUZAMENTO',cruzamentos[cruz]["numeroCruzamento"],'\n')
-        # print('INFORMAÇÕES CRUZAMENTO\n')
-        print('Velocidade Média na Via Principal:',calculaMedia(cruzamentos[cruz]["velocidadesViaPrincipal"]),'km/h\n')
-        print('Fluxo de carros na Via Auxiliar - Sentido 1:',calculaFluxo(cruzamentos[cruz]["qtdCarrosViaAuxiliar_S1"],cruzamentos[cruz]["tempoInicial"]),'carros/min\n')
-        print('Fluxo de carros na Via Auxiliar - Sentido 2:',calculaFluxo(cruzamentos[cruz]["qtdCarrosViaAuxiliar_S2"],cruzamentos[cruz]["tempoInicial"]),'carros/min\n')
+    while True:
 
+        for cruz in cruzamentos:
+            print('CRUZAMENTO',cruzamentos[cruz]["numeroCruzamento"],'\n')
+            print('Velocidade Média na Via Principal:',calculaMedia(cruzamentos[cruz]["velocidadesViaPrincipal"]),'km/h\n')
+            print('Fluxo de carros na Via Auxiliar - Sentido 1:',calculaFluxo(cruzamentos[cruz]["qtdCarrosViaAuxiliar_S1"],cruzamentos[cruz]["tempoInicial"]),'carros/min\n')
+            print('Fluxo de carros na Via Auxiliar - Sentido 2:',calculaFluxo(cruzamentos[cruz]["qtdCarrosViaAuxiliar_S2"],cruzamentos[cruz]["tempoInicial"]),'carros/min\n')
+            print('Quantidade de carros acima da velocidade permitida:',cruzamentos[cruz]["qtdInfracoesVelocidade"],'\n')
+            print('Quantidade de carros que ultrapassaram o sinal vermelho:',cruzamentos[cruz]["qtdInfracoesSinal"],'\n')
+            
+        print('\nDigite CTRL + C para voltar ao menu:')
 
-    saida = input('Pressione ENTER para voltar ao menu')
-    limpaTela()
+        if evento_saida.is_set():
+            limpaTela()
+            evento_saida.clear()
+            break
+
+        sleep(1)
+        limpaTela()
+
 
 
 def print_menu():
@@ -54,13 +73,18 @@ def print_menu():
         print('Selecione uma opção\n')
         print('1 - Verificar informações dos cruzamentos\n')
         print('2 - Comando para cruzamentos\n')
+        print('3 - Sair\n')
 
         opcao = int(input())
 
-        while opcao != 1 and opcao != 2:
-            print('INVÁLIDO! Digite 1 ou 2!')
+        while opcao != 1 and opcao != 2 and opcao != 3:
+            print('INVÁLIDO! Digite 1 ou 2 ou 3!')
             opcao = int(input())
 
 
         if opcao == 1:
-            print_menu_info()
+            threadMenu = Thread(target=print_menu_info, daemon=True)
+            threadMenu.start()
+            threadMenu.join()
+        else:
+            break

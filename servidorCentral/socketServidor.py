@@ -3,6 +3,7 @@ from _thread import *
 from threading import Thread
 from menu import atualizaInfo, cruzamentos
 import json
+import pickle
 
 
 connections = []
@@ -18,7 +19,7 @@ def thread_cliente(c):
             # atualizaInfo(data)
             # json.loads(data)
             # cruzamentos.append(json.loads(data))
-            atualizaInfo(json.loads(data))
+            atualizaInfo(pickle.loads(data))
     
     c.close()
 
@@ -44,5 +45,3 @@ def inicializaSocket():
 
     s.close()
 
-# if __name__ == '__main__':
-# 	inicializaSocket()

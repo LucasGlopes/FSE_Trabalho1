@@ -1,4 +1,4 @@
-from gpioFunctions import apagaLeds, acendeLeds
+from funcoesGPIO import apagaLeds, acendeLeds
 from time import sleep
 from valores import TEMPO
 

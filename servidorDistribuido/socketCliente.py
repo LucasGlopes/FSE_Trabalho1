@@ -1,11 +1,11 @@
 import socket
 import json
+import pickle
 
 def socketCliente(host, port, CRUZAMENTO):
     global conexao
 
     conexao = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    # sock.bind(("", 10284))
     conexao.connect((host, port))
 
     dadosCruzamento = {
@@ -19,7 +19,7 @@ def socketCliente(host, port, CRUZAMENTO):
     }
     while True:
 
-        conexao.send(json.dumps(dadosCruzamento).encode())
+        conexao.send(pickle.dumps(dadosCruzamento))
 
         data = conexao.recv(1024)
 
@@ -35,4 +35,4 @@ def socketCliente(host, port, CRUZAMENTO):
 def envia_mensagem(dadosCruzamento):
     global conexao
 
-    conexao.send(json.dumps(dadosCruzamento).encode())
+    conexao.send(pickle.dumps(dadosCruzamento))
