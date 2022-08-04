@@ -23,7 +23,7 @@ cd FSE_Trabalho1/servidorDistribuido
 ```
 * Execute o comando abaixo. O código, então, irá inicializar os dois cruzamentos da placa em processos diferentes:
 ```
-python3 main.py [ENDEREÇO IP DO SERVIDOR] [PORTA DO SERVIDOR]
+python3 main.py [ENDEREÇO IP DO SERVIDOR CENTRAL] [PORTA DO SERVIDOR CENTRAL]
 ```
 
 ## Observações
