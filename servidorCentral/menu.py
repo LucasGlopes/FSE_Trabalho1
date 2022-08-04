@@ -49,11 +49,11 @@ def print_menu_info():
 
         for cruz in cruzamentos:
             print('CRUZAMENTO',cruzamentos[cruz]["numeroCruzamento"],'\n')
-            print('Velocidade Média na Via Principal:',calculaMedia(cruzamentos[cruz]["velocidadesViaPrincipal"]),'km/h\n')
-            print('Fluxo de carros na Via Auxiliar - Sentido 1:',calculaFluxo(cruzamentos[cruz]["qtdCarrosViaAuxiliar_S1"],cruzamentos[cruz]["tempoInicial"]),'carros/min\n')
-            print('Fluxo de carros na Via Auxiliar - Sentido 2:',calculaFluxo(cruzamentos[cruz]["qtdCarrosViaAuxiliar_S2"],cruzamentos[cruz]["tempoInicial"]),'carros/min\n')
-            print('Quantidade de carros acima da velocidade permitida:',cruzamentos[cruz]["qtdInfracoesVelocidade"],'\n')
-            print('Quantidade de carros que ultrapassaram o sinal vermelho:',cruzamentos[cruz]["qtdInfracoesSinal"],'\n')
+            print('Velocidade Média na Via Principal:',round(calculaMedia(cruzamentos[cruz]["velocidadesViaPrincipal"]), 2),'km/h\n')
+            print('Fluxo de carros na Via Auxiliar - Sentido 1:',round(calculaFluxo(cruzamentos[cruz]["qtdCarrosViaAuxiliar_S1"],cruzamentos[cruz]["tempoInicial"]), 2),'carros/min\n')
+            print('Fluxo de carros na Via Auxiliar - Sentido 2:',round(calculaFluxo(cruzamentos[cruz]["qtdCarrosViaAuxiliar_S2"],cruzamentos[cruz]["tempoInicial"]), 2),'carros/min\n')
+            print('Quantidade de carros acima da velocidade permitida na Via Principal:',cruzamentos[cruz]["qtdInfracoesVelocidade"],'\n')
+            print('Quantidade de carros que ultrapassaram o sinal vermelho na Via Auxiliar:',cruzamentos[cruz]["qtdInfracoesSinal"],'\n')
             
         print('\nDigite CTRL + C para voltar ao menu:')
 

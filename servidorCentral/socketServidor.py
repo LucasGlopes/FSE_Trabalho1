@@ -1,18 +1,17 @@
 import socket
 from _thread import *
 from threading import Thread
-from menu import atualizaInfo, cruzamentos
+from menu import atualizaInfo
 import json
 import pickle
 
 
-connections = []
+conexoes = []
 
 def thread_cliente(c):
     while True:
         data = c.recv(1024)
         if not data:
-            # print('bye')
             break
         else:
             # c.send(data)
@@ -23,11 +22,11 @@ def thread_cliente(c):
     
     c.close()
 
-def inicializaSocket():
-    global connections
+def inicializaSocket(port):
+    global conexoes
     host = "0.0.0.0"
 
-    port = 10282
+    # port = 10282
     
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -39,9 +38,8 @@ def inicializaSocket():
 
     while True:
         c, addr = s.accept()
-        connections.append(c)
+        conexoes.append(c)
         threadSocket = Thread(target=thread_cliente, args=(c,))
         threadSocket.start()
 
-    s.close()
 

@@ -19,8 +19,8 @@ def socketCliente(host, port, CRUZAMENTO):
     }
     while True:
 
-        conexao.send(pickle.dumps(dadosCruzamento))
-
+        # conexao.send(pickle.dumps(dadosCruzamento))
+        envia_mensagem(dadosCruzamento)
         data = conexao.recv(1024)
 
         # print('received from the server :', str(data.decode('ascii')))

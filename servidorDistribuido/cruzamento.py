@@ -161,7 +161,6 @@ def inicializaCruzamento(CRUZAMENTO, host, port):
         semaforoAuxiliar = [CRUZAMENTO['SEMAFORO_1_VERDE'], CRUZAMENTO['SEMAFORO_1_AMARELO'], CRUZAMENTO['SEMAFORO_1_VERMELHO']]
 
         global estadoAtual
-        # estadoAtual = 0
 
         GPIO.setup(semaforoPrincipal, GPIO.OUT)
         GPIO.setup(semaforoAuxiliar, GPIO.OUT)
@@ -188,7 +187,6 @@ def inicializaCruzamento(CRUZAMENTO, host, port):
         GPIO.add_event_detect(CRUZAMENTO['SENSOR_VELOCIDADE_2_A'],GPIO.FALLING,callback=lambda x: trataTempoInicial(CRUZAMENTO['SENSOR_VELOCIDADE_2_A'],CRUZAMENTO))
         GPIO.add_event_detect(CRUZAMENTO['SENSOR_VELOCIDADE_2_B'],GPIO.FALLING,callback=lambda x: trataTempoFinal(CRUZAMENTO['SENSOR_VELOCIDADE_2_B'],CRUZAMENTO))
 
-        # socket = Thread(target=socketCliente, args=('164.41.98.26',10282,CRUZAMENTO),daemon=True)
         socket = Thread(target=socketCliente, args=(host,port,CRUZAMENTO),daemon=True)
         socket.start()
 
