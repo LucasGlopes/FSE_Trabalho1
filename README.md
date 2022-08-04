@@ -6,7 +6,7 @@ A descrição completa da atividade pode ser vista [aqui](https://gitlab.com/fse
 ## Execução do Projeto
 
 ### Servidor Central
-* Acesse o diretório do servidor central:
+*  Para o funcionamento do projeto, deve-se, primeiramente, inicializar o servidor central. Portanto, acesse o diretório do servidor central:
 ```
 cd FSE_Trabalho1/servidorCentral
 ```
@@ -16,7 +16,7 @@ python3 main.py [PORTA]
 ```
 
 ### Servidores Distribuídos
-* Acesse o diretório do servidor distribuído:
+* Após a inicialização do servidor central, acesse o diretório do servidor distribuído:
 
 ```
 cd FSE_Trabalho1/servidorDistribuido
