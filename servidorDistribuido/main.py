@@ -17,4 +17,4 @@ if __name__ == "__main__":
     cruz1.start()
     cruz2.start()
 
-    name = input('Press enter to exit')
+    saida = input('Pressione ENTER para sair')

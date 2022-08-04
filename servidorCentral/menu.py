@@ -70,7 +70,7 @@ def print_menu_info():
 def print_menu():
     while True:
         print('\nSERVIDOR CENTRAL\n')
-        print('Selecione uma opção\n')
+        print('Selecione uma opção e aperte ENTER\n')
         print('1 - Verificar informações dos cruzamentos\n')
         print('2 - Comando para cruzamentos\n')
         print('3 - Sair\n')
