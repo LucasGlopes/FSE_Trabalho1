@@ -86,5 +86,5 @@ def print_menu():
             threadMenu = Thread(target=print_menu_info, daemon=True)
             threadMenu.start()
             threadMenu.join()
-        else:
+        elif opcao == 3:
             break
